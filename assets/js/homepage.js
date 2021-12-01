@@ -6,10 +6,14 @@ var repoSearchTerm = document.querySelector("#repo-search-term");
 
 var formSubmitHandler = function(event) {
     event.preventDefault();
+
     var username = nameInputEl.value.trim();
-    console.log(username)
+    
     if(username) {
         getUserRepos(username);
+
+        // clear old content
+        repoContainerEl.textContent = '';
         nameInputEl.value = "";
     } 
     else{
@@ -18,10 +22,6 @@ var formSubmitHandler = function(event) {
 }
 
 var getUserRepos = function(user) {
-    //check if api returnned any repos
-    if(repos.length === 0 ) {
-        repoContainerEl.textContent = "No repositories found.";
-    }
     // format the github api url
     var apiUrl = "https://api.github.com/users/" + user + "/repos";
 
@@ -31,10 +31,11 @@ var getUserRepos = function(user) {
         //request was successful
         if(response.ok){
             response.json().then(function(data) {
+                console.log(data);
                 displayRepos(data, user);
             });
         }else {
-        alert("Error: GitHub User Not found")
+        alert("Error: " + response.statusText)
         }
     })
     .catch(function(error) {
@@ -48,8 +49,12 @@ var displayRepos = function(repos, searchTerm) {
     console.log(repos);
     console.log(searchTerm);
 
-    // clear old content
-    repoContainerEl.textContent = "";
+    //check if api returnned any repos
+    if(repos.length == 0) {
+        repoContainerEl.textContent = "No repositories found.";
+    }
+
+
     repoSearchTerm.textContent = searchTerm;
 
     //loop ove repos
